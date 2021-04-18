@@ -1,4 +1,4 @@
-﻿namespace Pokedex.Api.Models
+﻿namespace Pokedex.Api.Models.ApiResponse
 {
     /// <summary>
     /// Defines the <see cref="Pokemon" />.
