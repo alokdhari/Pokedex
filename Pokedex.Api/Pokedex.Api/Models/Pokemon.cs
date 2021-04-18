@@ -1,4 +1,4 @@
-﻿namespace Pokedex.Api.Controllers
+﻿namespace Pokedex.Api.Models
 {
     /// <summary>
     /// Defines the <see cref="Pokemon" />.

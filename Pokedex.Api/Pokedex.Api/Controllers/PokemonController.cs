@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Pokedex.Api.Models;
 using System;
 
 namespace Pokedex.Api.Controllers
