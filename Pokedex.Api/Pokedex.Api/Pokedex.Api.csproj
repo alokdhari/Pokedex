@@ -10,9 +10,5 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Pokedex\Api\Models\" />
-  </ItemGroup>
-
 
 </Project>

@@ -1,15 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Pokedex.Api.Services.Pokemon;
+using Pokedex.Api.Services.Tranlators;
 
 namespace Pokedex.Api
 {
@@ -25,6 +20,9 @@ namespace Pokedex.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IPokemonService, PokemonService>();
+            services.AddSingleton<ITranslator, Translator>();
+
             services.AddControllers();
         }
 

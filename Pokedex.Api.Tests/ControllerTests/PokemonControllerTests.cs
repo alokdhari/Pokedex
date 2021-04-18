@@ -37,6 +37,8 @@ namespace Pokedex.Api.Tests.ControllerTests
             var pokemon = JsonSerializer.Deserialize<Pokemon>(apiResponse, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
             pokemon.Name.Should().Be(name);
+            pokemon.Habitat.Should().Be("rare");
+            pokemon.IsLegendary.Should().Be(true);
         }
 
         [Test]
@@ -67,6 +69,23 @@ namespace Pokedex.Api.Tests.ControllerTests
             var pokemon = JsonSerializer.Deserialize<Pokemon>(apiResponse, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
             pokemon.Name.Should().Be(name);
+            pokemon.Habitat.Should().Be("rare");
+            pokemon.IsLegendary.Should().Be(true);
+        }
+
+        [Test]
+        public async Task Get_TranslatedPokemonName_ShouldReturnNotFoundIfPokemonDoesNotExist()
+        {
+            // Act
+            var name = "mewtwoihishaidhsaidhisad";
+            var response = await _client.GetAsync($"/pokemon/translated/{name}");
+
+            // Assert
+            response.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+
+            var apiResponse = await response.Content.ReadAsStringAsync();
+
+            apiResponse.Should().Be("This pokemon is so rare that we just could not find the details for it.");
         }
     }
 }

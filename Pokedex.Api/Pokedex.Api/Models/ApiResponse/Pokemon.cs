@@ -1,10 +1,23 @@
-﻿namespace Pokedex.Api.Models.ApiResponse
+﻿using Pokedex.Api.Services.Models;
+using System.Linq;
+
+namespace Pokedex.Api.Models.ApiResponse
 {
     /// <summary>
     /// Defines the <see cref="Pokemon" />.
     /// </summary>
     public class Pokemon
     {
+        public Pokemon() {}
+
+        public Pokemon(PokemonSpecies pokemonSpecies)
+        {
+            Habitat = pokemonSpecies.Habitat?.Name;
+            IsLegendary = pokemonSpecies.IsLegendary;
+            Name = pokemonSpecies.Name;
+            StandardDescription = pokemonSpecies.FlavorTextEntries?.FirstOrDefault(o => o.Language.LanguageName == "en").FlavorText;
+        }
+
         /// <summary>
         /// Gets or sets the Habitat.
         /// </summary>

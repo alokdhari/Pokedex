@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Pokedex.Api.Models;
+using Microsoft.Extensions.Logging;
 using Pokedex.Api.Models.ApiResponse;
+using Pokedex.Api.Services.Pokemon;
+using Pokedex.Api.Services.Tranlators;
 using System;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Pokedex.Api.Controllers
@@ -18,6 +17,17 @@ namespace Pokedex.Api.Controllers
     [ApiController]
     public class PokemonController : ControllerBase
     {
+        private readonly IPokemonService pokemonService;
+        private readonly ITranslator translator;
+        private readonly ILogger<PokemonController> logger;
+
+        public PokemonController(IPokemonService pokemonService, ITranslator translator, ILogger<PokemonController> logger)
+        {
+            this.pokemonService = pokemonService;
+            this.translator = translator;
+            this.logger = logger;
+        }
+
         /// <summary>
         /// Get details of a <see cref="Pokemon"/> using it's name
         /// </summary>
@@ -26,37 +36,23 @@ namespace Pokedex.Api.Controllers
         [HttpGet]
         [Route("{pokemonName}")]
         [ProducesResponseType(typeof(Pokemon), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPokemon(string pokemonName)
+        public async Task<IActionResult> GetPokemonAsync(string pokemonName)
         {
             try
             {
-                var pokemonApiClient = new HttpClient
+                var pokemonSpeciesResponse = await pokemonService.GetPokemonByName(pokemonName);
+                if (!pokemonSpeciesResponse.Successful)
                 {
-                    BaseAddress = new Uri("https://pokeapi.co")
-                };
-
-                var result = await pokemonApiClient.GetAsync($"/api/v2/pokemon-species/{pokemonName}");
-
-                if (!result.IsSuccessStatusCode)
-                {
-                    return StatusCode((int)result.StatusCode, "This pokemon is so rare that we just could not find the details for it.");
+                    return StatusCode((int)pokemonSpeciesResponse.HttpStatusCode, pokemonSpeciesResponse.Message);
                 }
 
-                var jsonContent = await result.Content.ReadAsStringAsync();
-                var pokemonDetailsFromTheApi = JsonSerializer.Deserialize<PokemonSpecies>(jsonContent, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-
-                var pokemon = new Pokemon
-                {
-                    Name = pokemonDetailsFromTheApi.Name,
-                    StandardDescription = pokemonDetailsFromTheApi.FlavorTextEntries.FirstOrDefault(o => o.Language.LanguageName == "en").FlavorText,
-                    Habitat = pokemonDetailsFromTheApi.Habitat.Name,
-                    IsLegendary = pokemonDetailsFromTheApi.IsLegendary
-                };
-
+                var pokemonSpecies = pokemonSpeciesResponse.Data;
+                var pokemon = new Pokemon(pokemonSpecies);
                 return Ok(pokemon);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -69,19 +65,34 @@ namespace Pokedex.Api.Controllers
         [HttpGet]
         [Route("translated/{pokemonName}")]
         [ProducesResponseType(typeof(Pokemon), StatusCodes.Status200OK)]
-        public IActionResult GetTranslatedPokemon(string pokemonName)
+        public async Task<IActionResult> GetTranslatedPokemonAsync(string pokemonName)
         {
             try
             {
-                var pokemon = new Pokemon
+                var pokemonSpeciesResponse = await pokemonService.GetPokemonByName(pokemonName);
+                if (!pokemonSpeciesResponse.Successful)
                 {
-                    Name = pokemonName
-                };
+                    return StatusCode((int)pokemonSpeciesResponse.HttpStatusCode, pokemonSpeciesResponse.Message);
+                }
+
+                var pokemonSpecies = pokemonSpeciesResponse.Data;
+                var pokemon = new Pokemon(pokemonSpecies);
+                var shouldApplyYodaTranslation = pokemon.Habitat == "cave" || pokemon.IsLegendary;
+
+                if (shouldApplyYodaTranslation)
+                {
+                    pokemon.StandardDescription = await translator.TranslateToYoda(pokemon.StandardDescription);
+                }
+                else
+                {
+                    pokemon.StandardDescription = await translator.TranslateToShakespeare(pokemon.StandardDescription);
+                }
 
                 return Ok(pokemon);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
