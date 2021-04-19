@@ -7,14 +7,15 @@ Steps to run the project, presuming you have docker installed.
 
 * Run the next command to run the docker image:
 
-``` docker run -d -p 22154:80 pokedex -P -e "ASPNETCORE_ENVIRONMENT=Development" -e "ASPNETCORE_URLS=https://+:443;http://+:80" ```
+``` docker run -d -p 25000:80 pokedex -P -e "ASPNETCORE_ENVIRONMENT=Development" -e "ASPNETCORE_URLS=https://+:443;http://+:80" ```
 
-Head to ` http://localhost:22154/pokemon/mewtwo` to verify all is well.
+Head to ` http://localhost:25000/pokemon/mewtwo` to verify all is well.
 
 
 # What would I have done more?
 
 * Wrap the external calls using HttpClients and add HttpClient as a dependency
-* Write more tests
-* Implement rate limiting functions and feedback to the api callers
+* Write a lot more tests, especially mocking the services and testing the logic
+* Implement rate limiting functions and better feedback to the api callers
 * Implement logging
+* Implement Caching abilities

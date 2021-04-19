@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Pokedex.Api.Tests.ControllerTests
+namespace Pokedex.Api.Tests.ControllerTests.IntegrationTests
 {
     public class PokemonControllerTests
     {
@@ -57,7 +57,7 @@ namespace Pokedex.Api.Tests.ControllerTests
         }
 
         [Test]
-        public async Task Get_TranslatedPokemonName_ShouldReturnTheCorrectPokemon()
+        public async Task Get_TranslatedPokemonName_ShouldReturnTheCorrectPokemon_WithYodaTranslation()
         {
             // Act
             var name = "mewtwo";
@@ -71,6 +71,29 @@ namespace Pokedex.Api.Tests.ControllerTests
             pokemon.Name.Should().Be(name);
             pokemon.Habitat.Should().Be("rare");
             pokemon.IsLegendary.Should().Be(true);
+            
+            // There is a rate limit on the tranlation api and this fails if it is hit.
+            //pokemon.StandardDescription.Should().Be("Created by\na scientist after\nyears of horrific gene splicing and\ndna engineering\nexperiments,  it was.");
+        }
+
+        [Test]
+        public async Task Get_TranslatedPokemonName_ShouldReturnTheCorrectPokemon_WithShakespeareTranslation()
+        {
+            // Act
+            var name = "bulbasaur";
+            var response = await _client.GetAsync($"/pokemon/translated/{name}");
+
+            // Assert
+            response.StatusCode.Should().Be(StatusCodes.Status200OK);
+            var apiResponse = await response.Content.ReadAsStringAsync();
+            var pokemon = JsonSerializer.Deserialize<Pokemon>(apiResponse, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+            pokemon.Name.Should().Be(name);
+            pokemon.Habitat.Should().Be("grassland");
+            pokemon.IsLegendary.Should().Be(false);
+            
+            // There is a rate limit on the tranlation api and this fails if it is hit. 
+            // pokemon.StandardDescription.Should().Be("A strange seed wast\nplanted on its\nback at birth. The plant sprouts\nand grows with\nthis pokémon.");
         }
 
         [Test]

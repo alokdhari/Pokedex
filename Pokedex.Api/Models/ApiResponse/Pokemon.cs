@@ -12,10 +12,11 @@ namespace Pokedex.Api.Models.ApiResponse
 
         public Pokemon(PokemonSpecies pokemonSpecies)
         {
-            Habitat = pokemonSpecies.Habitat?.Name;
+            Habitat = pokemonSpecies.Habitat?.Name ?? string.Empty;
             IsLegendary = pokemonSpecies.IsLegendary;
             Name = pokemonSpecies.Name;
-            StandardDescription = pokemonSpecies.FlavorTextEntries?.FirstOrDefault(o => o.Language.LanguageName == "en").FlavorText;
+            StandardDescription = pokemonSpecies.FlavorTextEntries != null && pokemonSpecies.FlavorTextEntries.Any(o => o.Language.LanguageName == "en") ?
+                pokemonSpecies.FlavorTextEntries?.FirstOrDefault(o => o.Language.LanguageName == "en").FlavorText : string.Empty;
         }
 
         /// <summary>
