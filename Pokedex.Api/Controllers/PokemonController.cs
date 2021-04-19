@@ -36,6 +36,8 @@ namespace Pokedex.Api.Controllers
         [HttpGet]
         [Route("{pokemonName}")]
         [ProducesResponseType(typeof(Pokemon), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPokemonAsync(string pokemonName)
         {
             try
@@ -58,13 +60,15 @@ namespace Pokedex.Api.Controllers
         }
 
         /// <summary>
-        /// Get translated details of a <see cref="Pokemon"/> details using it's name
+        /// Get translated details of a <see cref="Pokemon"/> using it's name
         /// </summary>
         /// <param name="pokemonName">The Pokemon's name<see cref="string"/>.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
         [HttpGet]
         [Route("translated/{pokemonName}")]
         [ProducesResponseType(typeof(Pokemon), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetTranslatedPokemonAsync(string pokemonName)
         {
             try
