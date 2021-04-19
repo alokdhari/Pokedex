@@ -72,7 +72,7 @@ namespace Pokedex.Api.Tests.ControllerTests.IntegrationTests
             pokemon.Habitat.Should().Be("rare");
             pokemon.IsLegendary.Should().Be(true);
             
-            // There is a rate limit on the tranlation api and this fails if it is hit.
+            // There is a rate limit on the translation api and this fails if it is hit.
             //pokemon.StandardDescription.Should().Be("Created by\na scientist after\nyears of horrific gene splicing and\ndna engineering\nexperiments,  it was.");
         }
 
@@ -92,7 +92,7 @@ namespace Pokedex.Api.Tests.ControllerTests.IntegrationTests
             pokemon.Habitat.Should().Be("grassland");
             pokemon.IsLegendary.Should().Be(false);
             
-            // There is a rate limit on the tranlation api and this fails if it is hit. 
+            // There is a rate limit on the translation api and this fails if it is hit. 
             // pokemon.StandardDescription.Should().Be("A strange seed wast\nplanted on its\nback at birth. The plant sprouts\nand grows with\nthis pokémon.");
         }
 
